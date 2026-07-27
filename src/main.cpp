@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 #include <string_view>
 #include <string>
 
@@ -37,13 +38,26 @@ void print_usage() {
               << "  fengling_trainer --target Game.exe --list\n"
               << "  fengling_trainer --target Game.exe --enable infinite_health\n\n"
               << "Options:\n"
+              << "  --config <path>     Load key=value config file.\n"
               << "  -t, --target <exe>   Target process name. Default: Game.exe\n"
+              << "  --log <path>        Log file path. Default: logs/fengling_trainer.log\n"
               << "  --list              List available cheats.\n"
               << "  --enable <id>       Enable a cheat by id.\n"
               << "  --disable <id>      Disable a cheat by id.\n"
               << "  --toggle <id>       Toggle a cheat by id.\n"
+              << "  --show-config       Show resolved configuration.\n"
               << "  --version           Show version.\n"
               << "  --help              Show this help.\n";
+}
+
+void print_config(const trainer::Config& config) {
+    std::cout << "\nResolved config:\n"
+              << " - target_process: " << config.target_process_name << "\n"
+              << " - log_path: " << config.log_path << "\n";
+
+    for (const auto& [cheat_id, hotkey] : config.cheat_hotkeys) {
+        std::cout << " - hotkey." << cheat_id << ": " << hotkey << "\n";
+    }
 }
 
 void print_cheats(const trainer::Trainer& app) {
@@ -59,8 +73,6 @@ void print_cheats(const trainer::Trainer& app) {
 }  // namespace
 
 int main(int argc, char* argv[]) {
-    trainer::Logger logger("logs/fengling_trainer.log");
-
     if (has_arg(argc, argv, "--help")) {
         print_usage();
         return 0;
@@ -72,13 +84,19 @@ int main(int argc, char* argv[]) {
     }
 
     const auto config = trainer::Config::from_args(argc, argv);
-    trainer::Trainer app;
+    trainer::Logger logger(config.log_path);
+    trainer::Trainer app(config.cheat_hotkeys);
 
     logger.info("Application started.");
     logger.info("Target process: " + config.target_process_name);
 
     std::cout << trainer::kAppName << " v" << trainer::kAppVersion << "\n";
     std::cout << "Target process: " << config.target_process_name << "\n\n";
+
+    if (has_arg(argc, argv, "--show-config")) {
+        print_config(config);
+        return 0;
+    }
 
     const auto cheat_to_enable = value_after_arg(argc, argv, "--enable");
     if (!cheat_to_enable.empty() && !app.enable_cheat(cheat_to_enable)) {
