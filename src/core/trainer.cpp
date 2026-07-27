@@ -1,6 +1,7 @@
 #include "core/trainer.hpp"
 
 #include <algorithm>
+#include <map>
 
 namespace trainer {
 
@@ -10,6 +11,11 @@ Trainer::Trainer()
           Cheat{"infinite_money", "Infinite money", "Keep money/resources from decreasing.", "F2", false},
           Cheat{"no_cooldown", "No skill cooldown", "Skip skill cooldown timers.", "F3", false},
       } {}
+
+Trainer::Trainer(const std::map<std::string, std::string>& hotkeys)
+    : Trainer() {
+    apply_hotkeys(hotkeys);
+}
 
 const std::vector<Cheat>& Trainer::cheats() const {
     return cheats_;
@@ -69,6 +75,15 @@ bool Trainer::toggle_cheat(const std::string& id) {
     }
 
     return true;
+}
+
+void Trainer::apply_hotkeys(const std::map<std::string, std::string>& hotkeys) {
+    for (auto& cheat : cheats_) {
+        const auto hotkey = hotkeys.find(cheat.id);
+        if (hotkey != hotkeys.end()) {
+            cheat.hotkey = hotkey->second;
+        }
+    }
 }
 
 }  // namespace trainer
