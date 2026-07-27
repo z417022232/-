@@ -1,6 +1,6 @@
 # 风灵月影修改器
 
-这是一个新的 Windows 游戏修改器项目骨架，当前目标是先搭好可扩展源码结构，后续再逐步加入真实游戏适配、热键监听、配置文件和图形界面。
+这是一个新的 Windows 游戏修改器项目骨架，当前目标是先搭好可扩展源码结构，后续再逐步加入真实游戏适配、热键监听和图形界面。
 
 ## 当前内容
 
@@ -12,7 +12,7 @@
 - 安全内存读写封装
 - 默认热键字段
 - 基础日志文件
-- 配置加载占位
+- INI 风格配置文件加载
 - Windows 平台接口预留
 
 ## 目录结构
@@ -21,6 +21,8 @@
 .
 ├── CMakeLists.txt
 ├── README.md
+├── config/
+│   └── fengling_trainer.example.ini
 ├── docs/
 │   ├── development-plan.md
 │   └── safety-rules.md
@@ -65,6 +67,7 @@ g++ -std=c++20 -Isrc \
 
 ```bash
 fengling_trainer --list
+fengling_trainer --config config/fengling_trainer.example.ini --show-config
 fengling_trainer --target Game.exe --enable infinite_health
 fengling_trainer --toggle infinite_health --list
 fengling_trainer --version
@@ -72,10 +75,24 @@ fengling_trainer --version
 
 日志默认写入 `logs/fengling_trainer.log`。
 
+## 配置文件
+
+可以使用简单的 `key=value` 配置文件覆盖默认设置：
+
+```ini
+target_process = Game.exe
+log_path = logs/fengling_trainer.log
+hotkey.infinite_health = F1
+hotkey.infinite_money = F2
+hotkey.no_cooldown = F3
+```
+
+命令行参数优先级高于配置文件，例如 `--target TestGame.exe` 会覆盖配置文件里的 `target_process`。
+
 ## 下一步
 
 1. 确定第一个支持的游戏和进程名。
 2. 为第一个游戏建立离线测试地址表。
 3. 增加 Windows 热键监听循环。
-4. 增加 JSON 配置文件。
+4. 建立修改项地址表或特征码扫描配置。
 5. 再决定做命令行版、Win32 原生界面、Qt 界面或 ImGui 界面。
