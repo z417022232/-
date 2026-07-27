@@ -8,6 +8,7 @@ struct Cheat {
     std::string id;
     std::string name;
     std::string description;
+    std::string hotkey;
     bool enabled = false;
 
     void enable();
