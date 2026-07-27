@@ -13,6 +13,8 @@
 - 默认热键字段
 - 基础日志文件
 - INI 风格配置文件加载
+- 游戏适配 Profile 加载
+- 修改项写入 dry-run 预览
 - Windows 平台接口预留
 
 ## 目录结构
@@ -22,6 +24,7 @@
 ├── CMakeLists.txt
 ├── README.md
 ├── config/
+│   ├── example-game.profile.ini
 │   └── fengling_trainer.example.ini
 ├── docs/
 │   ├── development-plan.md
@@ -37,6 +40,8 @@
     │   ├── logger.hpp
     │   ├── memory.cpp
     │   ├── memory.hpp
+    │   ├── profile.cpp
+    │   ├── profile.hpp
     │   ├── trainer.cpp
     │   ├── trainer.hpp
     │   └── version.hpp
@@ -59,7 +64,7 @@ cmake --build build
 ```bash
 g++ -std=c++20 -Isrc \
   src/main.cpp src/core/cheat.cpp src/core/config.cpp src/core/logger.cpp \
-  src/core/memory.cpp src/core/trainer.cpp src/platform/process.cpp \
+  src/core/memory.cpp src/core/profile.cpp src/core/trainer.cpp src/platform/process.cpp \
   -o /tmp/fengling_trainer_test
 ```
 
@@ -68,6 +73,8 @@ g++ -std=c++20 -Isrc \
 ```bash
 fengling_trainer --list
 fengling_trainer --config config/fengling_trainer.example.ini --show-config
+fengling_trainer --profile config/example-game.profile.ini --validate-profile
+fengling_trainer --profile config/example-game.profile.ini --enable infinite_health --dry-run
 fengling_trainer --target Game.exe --enable infinite_health
 fengling_trainer --toggle infinite_health --list
 fengling_trainer --version
@@ -89,10 +96,41 @@ hotkey.no_cooldown = F3
 
 命令行参数优先级高于配置文件，例如 `--target TestGame.exe` 会覆盖配置文件里的 `target_process`。
 
+## 游戏适配 Profile
+
+Profile 用来描述某个离线单机游戏版本里的修改项地址和值。当前只做解析、校验和 dry-run 预览，方便后续接入真实写入前先检查地址表。
+
+```ini
+profile_name = Example Game
+process_name = Game.exe
+
+cheat.infinite_health.address = 0x10000000
+cheat.infinite_health.type = int32
+cheat.infinite_health.value = 999
+```
+
+支持的值类型：
+
+- `int32`
+- `float32`
+- `byte`
+
+校验 Profile：
+
+```bash
+fengling_trainer --profile config/example-game.profile.ini --validate-profile
+```
+
+预览启用修改项会写入的位置：
+
+```bash
+fengling_trainer --profile config/example-game.profile.ini --enable infinite_health --dry-run
+```
+
 ## 下一步
 
 1. 确定第一个支持的游戏和进程名。
-2. 为第一个游戏建立离线测试地址表。
+2. 用 Profile 为第一个游戏建立离线测试地址表。
 3. 增加 Windows 热键监听循环。
-4. 建立修改项地址表或特征码扫描配置。
+4. 将 dry-run 通过校验的 Profile 接入真实内存写入。
 5. 再决定做命令行版、Win32 原生界面、Qt 界面或 ImGui 界面。
