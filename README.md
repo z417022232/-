@@ -1,6 +1,6 @@
 # 风灵月影修改器
 
-这是一个新的 Windows 游戏修改器项目骨架，当前目标是先搭好可扩展源码结构，后续再逐步加入真实游戏适配、热键、配置文件和图形界面。
+这是一个新的 Windows 游戏修改器项目骨架，当前目标是先搭好可扩展源码结构，后续再逐步加入真实游戏适配、热键监听、配置文件和图形界面。
 
 ## 当前内容
 
@@ -10,6 +10,8 @@
 - 修改项管理器 `Trainer`
 - 目标进程查找与附加接口
 - 安全内存读写封装
+- 默认热键字段
+- 基础日志文件
 - 配置加载占位
 - Windows 平台接口预留
 
@@ -29,10 +31,13 @@
     │   ├── cheat.hpp
     │   ├── config.cpp
     │   ├── config.hpp
+    │   ├── logger.cpp
+    │   ├── logger.hpp
     │   ├── memory.cpp
     │   ├── memory.hpp
     │   ├── trainer.cpp
-    │   └── trainer.hpp
+    │   ├── trainer.hpp
+    │   └── version.hpp
     └── platform/
         ├── process.cpp
         └── process.hpp
@@ -51,8 +56,8 @@ cmake --build build
 
 ```bash
 g++ -std=c++20 -Isrc \
-  src/main.cpp src/core/cheat.cpp src/core/config.cpp src/core/memory.cpp \
-  src/core/trainer.cpp src/platform/process.cpp \
+  src/main.cpp src/core/cheat.cpp src/core/config.cpp src/core/logger.cpp \
+  src/core/memory.cpp src/core/trainer.cpp src/platform/process.cpp \
   -o /tmp/fengling_trainer_test
 ```
 
@@ -61,12 +66,16 @@ g++ -std=c++20 -Isrc \
 ```bash
 fengling_trainer --list
 fengling_trainer --target Game.exe --enable infinite_health
+fengling_trainer --toggle infinite_health --list
+fengling_trainer --version
 ```
+
+日志默认写入 `logs/fengling_trainer.log`。
 
 ## 下一步
 
 1. 确定第一个支持的游戏和进程名。
 2. 为第一个游戏建立离线测试地址表。
-3. 增加热键系统。
+3. 增加 Windows 热键监听循环。
 4. 增加 JSON 配置文件。
 5. 再决定做命令行版、Win32 原生界面、Qt 界面或 ImGui 界面。
