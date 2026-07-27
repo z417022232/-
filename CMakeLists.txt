@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(fengling_trainer
-    VERSION 0.1.0
+    VERSION 0.2.0
     DESCRIPTION "A Windows game trainer project skeleton"
     LANGUAGES CXX
 )
@@ -14,6 +14,7 @@ add_executable(fengling_trainer
     src/main.cpp
     src/core/cheat.cpp
     src/core/config.cpp
+    src/core/logger.cpp
     src/core/memory.cpp
     src/core/trainer.cpp
     src/platform/process.cpp
