@@ -14,6 +14,8 @@ add_executable(fengling_trainer
     src/main.cpp
     src/core/cheat.cpp
     src/core/config.cpp
+    src/core/memory.cpp
+    src/core/trainer.cpp
     src/platform/process.cpp
 )
 
