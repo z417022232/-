@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -11,6 +12,7 @@ namespace trainer {
 class Trainer {
 public:
     Trainer();
+    explicit Trainer(const std::map<std::string, std::string>& hotkeys);
 
     [[nodiscard]] const std::vector<Cheat>& cheats() const;
     [[nodiscard]] std::optional<Cheat> find_cheat(const std::string& id) const;
@@ -21,6 +23,8 @@ public:
 
 private:
     std::vector<Cheat> cheats_;
+
+    void apply_hotkeys(const std::map<std::string, std::string>& hotkeys);
 };
 
 }  // namespace trainer
