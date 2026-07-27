@@ -17,6 +17,7 @@ public:
 
     bool enable_cheat(const std::string& id);
     bool disable_cheat(const std::string& id);
+    bool toggle_cheat(const std::string& id);
 
 private:
     std::vector<Cheat> cheats_;
